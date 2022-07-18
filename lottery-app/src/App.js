@@ -21,6 +21,21 @@ class App extends Component {
     this.setState({manager, players, balance});
   }
 
+  onSubmit = async (event) => {
+    event.preventDefault();
+
+    const accounts = await web3.eth.getAccounts();
+
+    this.setState({message: 'Processing Transaction to enter user...'});
+
+    await Lottery.methods.enter().send({
+      from: accounts[0],
+      value: web3.utils.toWei(this.state.value, 'ether')
+    });
+
+    this.setState({message: 'Congratulations! you have been entered'});
+  }
+
   render(){
     return (
 
@@ -33,7 +48,7 @@ class App extends Component {
           </p>
           <hr/>
 
-          <form>
+          <form onSubmit={this.onSubmit}>
             <h4>Want to try your luck!</h4>
             <div>
               <label>Amount of Ether to Enter</label>
@@ -43,6 +58,7 @@ class App extends Component {
             </div>
             <button>Enter</button>
           </form>
+          <h1>{this.state.message}</h1>
       </div>
     );
   }
